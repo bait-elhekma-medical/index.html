@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بيت الحكمة الطبي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+    body { background-color: #e6f0ff; color: #004080; }
+    header { text-align: center; padding: 40px 20px; background: #0073e6; color: #fff; }
+    header h1 { font-size: 2.5rem; }
+    main { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .service-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .service-card:hover { transform: translateY(-5px); }
+    .service-card img { width: 100%; height: 200px; object-fit: cover; }
+    .service-content { padding: 20px; }
+    .service-content h2 { margin-bottom: 10px; color: #004080; }
+    .service-content p { margin-bottom: 10px; line-height: 1.5; }
+    .service-content ul { list-style-type: disc; margin-left: 20px; }
+    .btn-contact { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #0073e6; color: #fff; border-radius: 8px; text-decoration: none; transition: background 0.3s; }
+    .btn-contact:hover { background: #005bb5; }
+    footer { text-align: center; padding: 30px 20px; background: #004080; color: #fff; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>بيت الحكمة الطبي التخصصي</h1>
+  <p>رعاية طبية شاملة لجميع التخصصات والخدمات</p>
+</header>
+
+<main>
+  <div class="services-grid" id="services-container">
+    <!-- سيتم ملئ الخدمات ديناميكيًا من Firestore -->
+  </div>
+</main>
+
+<footer>
+  <p>بيت الحكمة الطبي التخصصي &copy; 2025</p>
+</footer>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  // ضع هنا كود firebaseConfig اللي ظهرلك من Firebase
+  const firebaseConfig = {
+    apiKey: "ضع-القيمة-اللي ظهرتلك",
+    authDomain: "bait-elhekma-medical.firebaseapp.com",
+    projectId: "bait-elhekma-medical",
+    storageBucket: "bait-elhekma-medical.appspot.com",
+    messagingSenderId: "ضع-القيمة-اللي ظهرتلك",
+    appId: "ضع-القيمة-اللي ظهرتلك"
+  };
+
+  // تهيئة Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // جلب وعرض الخدمات ديناميكيًا
+  async function displayServices() {
+    const container = document.getElementById("services-container");
+    const querySnapshot = await getDocs(collection(db, "services"));
+    
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const div = document.createElement("div");
+      div.className = "service-card";
+      div.innerHTML = `
+        <img src="${data.imageURL}" alt="${data.title}">
+        <div class="service-content">
+          <h2>${data.title}</h2>
+          <p>${data.description}</p>
+          <ul>
+            ${data.subServices.map(item => `<li>${item}</li>`).join("")}
+          </ul>
+          <a href="tel:01014405094" class="btn-contact">اتصل للحجز</a>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  displayServices();
+</script>
+
+</body>
+</html>
